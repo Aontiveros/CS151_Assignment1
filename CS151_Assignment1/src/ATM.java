@@ -1,3 +1,6 @@
+import java.util.Scanner;
+
+
 /**
   ATM Class that interacts with the user and the bank computer
   ATM class for CS 151 Assignment #1  
@@ -6,59 +9,56 @@
  */
 public class ATM
 {
-	private float withdrawCashLimit;
-	private float withdrawTransactionLimit;
-	private float cashOnATM;
-	private int currentCardID;
+   private int ATMNumber;
+	private double withdrawLimit;
+   private double transactionLimit;
+	private double cashOnATM;
+	private double minimumCash;
+	private String bankName;
+	private String ATMName;
+	private CashCard currentCard;
+	private Bank supportedBank;
 	
-	/**
-	  ATM default constructor. Initializes everything to 0 so it cannot 
-	  be used.
-	 */
-	public ATM()
+
+	public ATM(String bankName, int ATMNumber, Bank newBank, int transactionLimit
+	      , int withdrawLimit, int minimumCash, int cashOnATM)
 	{
-		withdrawCashLimit = 0;
-		withdrawTransactionLimit = 0;
-		cashOnATM = 0;
+		this.ATMNumber = ATMNumber;
+		this.bankName = bankName;
+		this.transactionLimit = transactionLimit;
+		this.cashOnATM = cashOnATM;
+		this.minimumCash = minimumCash;
+		this.withdrawLimit = withdrawLimit;
+		
+		supportedBank = newBank;
+		ATMName = "ATM" + bankName + "_" + ATMNumber;
 	}
-	/**
-	 Verifies that the ID given to the ATM by card matches a bank on 
-	 the ATM.
-	  @return boolean value based on successful or unsuccessful verification.
-	 */
-	public boolean verifyBankId()
-	{
-		return false;	
-	}
-	/**
-	  Verifies with the bank that there is an account in the bank database
-	  that is associated with the card given to the ATM	  
-	  @return a boolean value based on verification of successful or unsuccessful verification.
-	 */
-	public boolean verifyCardId()
-	{
-		return false;
-	}
-	/**
-	  Dispenses cash to the current user if they have sufficient funds in their account.
-	 */
-	public void dispenseCash()
-	{
 	
-	}
-	/**
-	  Verifies that the card given to the ATM by the customer has a valid expiration date
-	  @return boolean value based on successful or unsuccessful expiration date.
-	 */
-	public boolean verifyExpirationDate()
-	{ 
-		return true;
-	}
-	/**
-	  Verifies whether or not the user password is correct.
-	 */
-	public void verifyPassword()
-	{
-	   
-	}
+	
+	public double getWithdrawLimit()
+   {
+      return withdrawLimit;
+   }
+   public void setWithdrawLimit(float withdrawLimit)
+   {
+      this.withdrawLimit = withdrawLimit;
+   }
+   public double getTransactionLimit()
+   {
+      return transactionLimit;
+   }
+   public void setTransactionLimit(float transactionLimit)
+   {
+      this.transactionLimit = transactionLimit;
+   }
+   public double getCashOnATM()
+   {
+      return cashOnATM;
+   }
+   public void setCashOnATM(float cashOnATM)
+   {
+      this.cashOnATM = cashOnATM;
+   }
+   
+
 }
