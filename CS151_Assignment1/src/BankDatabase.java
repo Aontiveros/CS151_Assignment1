@@ -13,17 +13,17 @@ public class BankDatabase
 	   Scanner in = new Scanner(inFile);	   
 
 	   Customer newCustomer;
-	   
+	   accounts = new Hashtable<>();
 	   while(in.hasNext())
 	   {
 	      newCustomer = new Customer();
 	      newCustomer.setCardId(in.nextInt());
 	      newCustomer.setChecking(in.nextDouble());
 	      newCustomer.setSavings(in.nextDouble());
-	      newCustomer.setPassword(in.nextLine());
+	      newCustomer.setPassword(in.next());
 	      newCustomer.setExpirationMonth(in.nextInt());
 	      newCustomer.setExpirationYear(in.nextInt());
-	      
+	      //System.out.println(newCustomer);
 	      accounts.put(newCustomer.getCardId(), newCustomer);
 	            
 	   }
@@ -31,12 +31,16 @@ public class BankDatabase
 	
 	public Customer getCustomer(int cardID)
 	{
-	   return accounts.get(accounts);
+	   return accounts.get(cardID);
 	}
 	
 	public boolean doesCardExist(int cardID)
 	{
 	   return accounts.containsKey(cardID);
+	}
+	public String getUserPassword(int cardID)
+	{
+	   return accounts.get(cardID).getPassword();
 	}
 	public void saveDatabase()
 	{
@@ -46,5 +50,13 @@ public class BankDatabase
 	{
 	   return accounts;
 	}
+	public void withdrawChecking(double amountWithdrawn, int cardID)
+	{
+	   accounts.get(cardID).withdrawChecking(amountWithdrawn);
+	}
+	public void withdrawSavings(double amountWithdrawn, int cardID)
+   {
+      accounts.get(cardID).withdrawSavings(amountWithdrawn);
+   }
 	
 }

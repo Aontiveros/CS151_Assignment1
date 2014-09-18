@@ -90,6 +90,15 @@ public class Customer
             + " Password: " + password;
       
    }
+   public void withdrawChecking(double amount)
+   {
+      checking -= amount;
+   }
+   public void withdrawSavings(double withdrawAmount)
+   {
+      savings -= withdrawAmount;
+      
+   }
     
     
 	

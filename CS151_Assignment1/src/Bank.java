@@ -1,6 +1,9 @@
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Random;
 import java.util.Set;
@@ -44,6 +47,11 @@ public class Bank
    {
       return supportedATMs;
    }
+   public ATM getSpecificATM(int ATMNumber)
+   {
+      return supportedATMs.get(ATMNumber);
+      
+   }
    public void displayAccounts()
    {
       Hashtable<Integer, Customer> copy = Database.getCustomers();
@@ -72,6 +80,62 @@ public class Bank
       Database.getCustomers().put(randomNum, new Customer(randomNum, randomYear,
             randomMonth, randomChecking, randomSavings, randomPassword));
                   
+   }
+   public boolean verifyExpiration(CashCard currentCustomer)
+   {
+      System.out.println(Calendar.getInstance().get(Calendar.YEAR));
+      if(Database.getCustomer(
+                 currentCustomer.getCardId()).getExpirationYear() >
+                  Calendar.getInstance().get(Calendar.YEAR))
+      {
+         return true;
+      }
+      else if(Database.getCustomer(
+            currentCustomer.getCardId()).getExpirationYear() == 
+                  Calendar.getInstance().get(Calendar.YEAR))
+      {
+         if(Database.getCustomer(
+               currentCustomer.getCardId()).getExpirationMonth() >= 
+                     Calendar.getInstance().get(Calendar.MONTH))
+         {
+            return true;
+         }
+      }
+      return false;
+
+      
+    
+   }
+   public boolean verifyCardID(CashCard currentCustomer)
+   { 
+      return Database.doesCardExist(currentCustomer.getCardId());
+   }
+   public boolean verifyUserPassword(String inputPassword, 
+                                     CashCard currentCustomer)
+   {
+      
+      return inputPassword.equals(
+                         Database.getUserPassword(currentCustomer.getCardId()));
+   }
+   public double getCheckingBalance(CashCard currentCustomer)
+   {
+      return Database.getCustomer(currentCustomer.getCardId()).getChecking();
+   }
+   public double getSavingsBalance(CashCard currentCustomer)
+   {
+      return Database.getCustomer(currentCustomer.getCardId()).getSavings();
+   }
+   public void withdrawChecking(double withdrawAmount, CashCard currentCustomer)
+   {
+      Database.getCustomer(
+            currentCustomer.getCardId()).withdrawChecking(withdrawAmount);
+      
+   }
+   public void withdrawSavings(double withdrawAmount, CashCard currentCustomer)
+   {
+      Database.getCustomer(
+            currentCustomer.getCardId()).withdrawSavings(withdrawAmount);
+      
    }
    
 
