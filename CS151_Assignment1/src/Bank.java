@@ -1,10 +1,8 @@
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.Random;
 import java.util.Set;
@@ -163,6 +161,16 @@ public class Bank
       {
          System.out.println(supportedATMs.get(key));
       }
+   }
+   public boolean accountStatus(CashCard currentCustomer)
+   {
+      return Database.getCustomer(currentCustomer.getCardId()).isAccessible();     
+   }
+   public void setAccountStatusFalse(CashCard currentCustomer) 
+         throws FileNotFoundException
+   {
+      Database.getCustomer(currentCustomer.getCardId()).setAccessible(false);
+      Database.saveDatabase(currentCustomer.getBankId());
    }
    
 

@@ -26,8 +26,8 @@ public class ATM
 	public ATM(String bankName, int ATMNumber, Bank newBank, int transactionLimit
 	      , int withdrawLimit, int minimumCash, int cashOnATM)
 	{
-		this.ATMNumber = ATMNumber;
-		this.bankName = bankName;
+		this.setATMNumber(ATMNumber);
+		this.setBankName(bankName);
 		this.transactionLimit = transactionLimit;
 		this.cashOnATM = cashOnATM;
 		this.minimumCash = minimumCash;
@@ -36,26 +36,23 @@ public class ATM
 		supportedBank = newBank;
 		ATMName = "ATM" + "_" + bankName + ATMNumber;
 	}
-	public void run() throws FileNotFoundException
+	public void run(Scanner in) throws FileNotFoundException
 	{
 	   String progress = "";
 	   while(!progress.equals("quit"))
 	   {
-	      if(checkCard())
-	         if(checkPassword())
-	            progress = completeDeposit(); 
+	      if(checkCard(in))
+	         if(checkPassword(in))
+	            progress = completeDeposit(in); 
 	         else
 	         {
-	            System.out.println("You have entered the incorrect password 3"
-	                  + " times, Please call the bank");
 	            progress = "quit";
 	         }
 	   }
 	}
 	
-	private String completeDeposit() throws FileNotFoundException
+	private String completeDeposit(Scanner in) throws FileNotFoundException
    {
-      Scanner in = new Scanner(System.in);
       String accountInput = in.next();
       while(!accountInput.equals("Checking") && !accountInput.equals("Savings"))
       {
@@ -64,20 +61,19 @@ public class ATM
       }
       if(accountInput.equals("Checking"))
       {
-         return withdrawChecking();
+         return withdrawChecking(in);
         
       }
       else if(accountInput.equals("Savings"))
       {
-         return withdrawSavings();
+         return withdrawSavings(in);
              
       }
       return "quit";
          
    }
-   private String withdrawSavings() throws FileNotFoundException
+   private String withdrawSavings(Scanner in) throws FileNotFoundException
    {
-      Scanner in = new Scanner(System.in);
       System.out.println("Current balance: " + 
       supportedBank.getSavingsBalance(currentCustomer));
       boolean successWithdraw = false;
@@ -116,14 +112,13 @@ public class ATM
       
    }
 
-   private String withdrawChecking() throws FileNotFoundException
+   private String withdrawChecking(Scanner in) throws FileNotFoundException
    {
       System.out.println("Current balance: " + 
       supportedBank.getCheckingBalance(currentCustomer));
       boolean successWithdraw = false;
       while(!successWithdraw)
       {
-         Scanner in = new Scanner(System.in);
          System.out.println(
                "Please enter an ammount you like to withdraw: ");
          double withdrawAmount = in.nextDouble();
@@ -144,7 +139,8 @@ public class ATM
          else
          {
             supportedBank.withdrawChecking(withdrawAmount, currentCustomer);
-            System.out.println("Transaction successful, your account balance is:"
+            System.out.println("Transaction successful, your account balance "
+                  + "is: $"
                   + supportedBank.getCheckingBalance(currentCustomer));
             successWithdraw = true;                    
          }
@@ -154,11 +150,21 @@ public class ATM
       return "quit";
    }
    
-   private boolean checkPassword()
+   private boolean checkPassword(Scanner in) throws FileNotFoundException
    {
-	   Scanner in = new Scanner(System.in);
 	   int incorrectCounter = 0;
-	   if(supportedBank.verifyUserPassword(in.nextLine(), currentCustomer))
+	   String getPassword = "";
+	   if(!supportedBank.accountStatus(currentCustomer))
+      {
+         System.out.println("Sorry this account is locked, "
+               + "please call the bank");
+         return false;
+      }
+	   System.out.println("This card is accepted, please enter your"
+            + " password: ");
+	   getPassword = in.next();
+	   if(supportedBank.verifyUserPassword(getPassword, currentCustomer) &&
+	         supportedBank.accountStatus(currentCustomer))
 	   {
 	      System.out.println("Welcome! Which account would you like to "
 	            + "access?:");
@@ -180,26 +186,25 @@ public class ATM
 	         }
 	         incorrectCounter++;
 	      }
+	      System.out.println("You have entered the incorrect password 3"
+               + " times, Please call the bank");
+	      supportedBank.setAccountStatusFalse(currentCustomer);
 	      return false;
 	   }
 
       
    }
-   private boolean checkCard()
+   private boolean checkCard(Scanner in)
    {
       System.out.println("Please enter your card information : ");
-      Scanner in = new Scanner(System.in);
       String inputBankID = in.next();
       int inputCardID = Integer.parseInt(in.next());
-      
       currentCustomer = new CashCard(inputBankID, inputCardID);
       if(inputBankID.equals(supportedBank.getBankID())
             && supportedBank.verifyCardID(currentCustomer))
       {
          if(supportedBank.verifyExpiration(currentCustomer))
          {
-            System.out.println("This card is accepted, please enter your"
-                  + " password: ");
             return true;
          }
          else
@@ -254,6 +259,35 @@ public class ATM
       
       
    }
+   /**
+    * @return the aTMNumber
+    */
+   public int getATMNumber()
+   {
+      return ATMNumber;
+   }
+   /**
+    * @param aTMNumber the ATMNumber to set
+    */
+   public void setATMNumber(int ATMNumber)
+   {
+      this.ATMNumber = ATMNumber;
+   }
+   /**
+    * @return the bankName
+    */
+   public String getBankName()
+   {
+      return bankName;
+   }
+   /**
+    * @param bankName the bankName to set
+    */
+   public void setBankName(String bankName)
+   {
+      this.bankName = bankName;
+   }
+   
    
 
 }

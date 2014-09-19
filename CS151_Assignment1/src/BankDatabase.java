@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 
@@ -9,7 +8,7 @@ public class BankDatabase
 {
 	private Hashtable<Integer, Customer> accounts;
 
-	public BankDatabase(String BankID) //throws FileNotFoundException
+	public BankDatabase(String BankID)
 	{
 	   accounts = new Hashtable<>();
 	   File inFile = new File(BankID + ".txt");
@@ -29,9 +28,11 @@ public class BankDatabase
 	         newCustomer.setExpirationYear(in.nextInt());
 	         newCustomer.setCheckingNumber(in.nextInt());
 	         newCustomer.setSavingsNumber(in.nextInt());
+	         newCustomer.setAccessible(in.nextBoolean());
 	         //System.out.println(newCustomer);
 	         accounts.put(newCustomer.getCardId(), newCustomer);
 	      }
+	      in.close();
 	   }
 	   catch(FileNotFoundException e)
 	   {
@@ -72,7 +73,7 @@ public class BankDatabase
          writer.println(accounts.get(key).getExpirationYear());
          writer.println(accounts.get(key).getCheckingNumber());
          writer.println(accounts.get(key).getSavingsNumber());
-     
+         writer.println(accounts.get(key).isAccessible());
       }
       writer.close();
       

@@ -1,5 +1,3 @@
-import java.util.Date;
-
 /**
  
   @author tony
@@ -16,6 +14,7 @@ public class Customer
    private int checkingNumber;
    private int savingsNumber;
    private String password;
+   private boolean accessible;
     
    public Customer(int cardId, int expirationYear, int expirationMonth, double
             checking, double savings, String password, int checkingNumber,
@@ -29,6 +28,7 @@ public class Customer
       this.password = password;
       this.checkingNumber = checkingNumber;
       this.savingsNumber = savingsNumber;
+      this.accessible = true;
        
    }  
    public Customer()
@@ -93,7 +93,7 @@ public class Customer
       return "Card ID: " + cardId + " Expiration: " + expirationMonth + "/" + 
             expirationYear + " Savings (#"+ savingsNumber+ "): $" + savings 
                   + " Checking (#"+ checkingNumber+ "):$" + checking
-            + " Password: " + password;
+            + " Password: " + password + " Accessible: " + accessible;
       
    }
    public void withdrawChecking(double amount)
@@ -120,6 +120,14 @@ public class Customer
    public void setSavingsNumber(int savingsNumber)
    {
       this.savingsNumber = savingsNumber;
+   }
+   public boolean isAccessible()
+   {
+      return accessible;
+   }
+   public void setAccessible(boolean accessible)
+   {
+      this.accessible = accessible;
    }
    
     
