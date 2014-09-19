@@ -1,11 +1,4 @@
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Date;
-import java.util.Scanner;
 
 
 
@@ -15,7 +8,22 @@ public class Main
    public static void main(String args[]) throws FileNotFoundException
    {
       Bank bank1 = new Bank("BankA");
+      Bank bank2 = new Bank("BankB");
       bank1.createATM();
-      bank1.getSpecificATM(1).run();
+      bank1.createATM();
+      bank1.initializeAccount();
+      bank1.initializeAccount();
+      bank1.displayAccounts();
+      bank1.printATMs();
+      
+      bank2.createATM();
+      bank2.createATM();
+      bank2.initializeAccount();
+      bank2.initializeAccount();
+      bank2.displayAccounts();
+      bank2.printATMs();
+    //
+      //bank2.
+    
    }
 }

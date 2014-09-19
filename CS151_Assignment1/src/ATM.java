@@ -37,16 +37,22 @@ public class ATM
 	}
 	public void run()
 	{
-	   String progress = "yes";
+	   String progress = "";
 	   while(!progress.equals("quit"))
 	   {
 	      if(checkCard())
 	         if(checkPassword())
-	            progress = completeDeposit();         
+	            progress = completeDeposit(); 
+	         else
+	         {
+	            System.out.println("You have entered the incorrect password 3"
+	                  + " times, Please call the bank");
+	            progress = "quit";
+	         }
 	   }
 	}
 	
-	private  String completeDeposit()
+	private String completeDeposit()
    {
       Scanner in = new Scanner(System.in);
       String accountInput = in.next();
@@ -57,73 +63,93 @@ public class ATM
       }
       if(accountInput.equals("Checking"))
       {
-         System.out.println("Current balance: " + 
-      supportedBank.getCheckingBalance(currentCustomer));
-         boolean successWithdraw = false;
-         while(!successWithdraw)
-         {
-            System.out.println(
-                   "Please enter an ammount you like to withdraw: ");
-            double withdrawAmount = in.nextDouble();
-            if(withdrawAmount > withdrawLimit || withdrawAmount > transactionLimit)
-            {
-               System.out.println("Please enter an ammount smaller than "
-                     + withdrawLimit);
-            }
-            else if(withdrawAmount > cashOnATM || cashOnATM == 0)
-            {
-               System.out.println("Sorry, the ATM only has " + cashOnATM);
-            }
-            else if(withdrawAmount > supportedBank.getCheckingBalance(currentCustomer))
-            {
-               System.out.println("Isufficient funds, please try a different"
-                     + " a different ammount.");
-            }
-            else
-            {
-               supportedBank.withdrawChecking(withdrawAmount, currentCustomer);
-               
-            }
-            
-            
-         }
+         return withdrawChecking();
+        
       }
-         else if(accountInput.equals("Savings"))
-         {
-            System.out.println("Current balance: " + 
-         supportedBank.getSavingsBalance(currentCustomer));
-            boolean successWithdraw = false;
-            while(!successWithdraw)
-            {
-               System.out.println(
-                      "Please enter an ammount you like to withdraw: ");
-               double withdrawAmount = in.nextDouble();
-               if(withdrawAmount > withdrawLimit || withdrawAmount > transactionLimit)
-               {
-                  System.out.println("Please enter an ammount smaller than "
-                        + withdrawLimit);
-               }
-               else if(withdrawAmount > cashOnATM || cashOnATM == 0)
-               {
-                  System.out.println("Sorry, the ATM only has " + cashOnATM);
-               }
-               else if(withdrawAmount > supportedBank.getSavingsBalance(currentCustomer))
-               {
-                  System.out.println("Isufficient funds, please try a different"
-                        + " a different ammount.");
-               }
-               else
-               {
-                  supportedBank.withdrawSavings(withdrawAmount, currentCustomer);
-               }
-               
-               
-            }
+      else if(accountInput.equals("Savings"))
+      {
+         return withdrawSavings();
+             
+      }
+      return "quit";
          
-      }
-      
-      return "hello";
    }
+   private String withdrawSavings()
+   {
+      Scanner in = new Scanner(System.in);
+      System.out.println("Current balance: " + 
+      supportedBank.getSavingsBalance(currentCustomer));
+      boolean successWithdraw = false;
+      while(!successWithdraw)
+      {
+         System.out.println(
+                "Please enter an ammount you like to withdraw: ");
+         double withdrawAmount = in.nextDouble();
+         if(withdrawAmount > withdrawLimit || withdrawAmount > transactionLimit)
+         {
+            System.out.println("Please enter an ammount smaller than "
+                  + withdrawLimit);
+         }
+         else if(withdrawAmount > cashOnATM || cashOnATM == 0)
+         {
+             System.out.println("Sorry, the ATM only has " + cashOnATM);
+         }
+         else if(withdrawAmount > supportedBank.getSavingsBalance(currentCustomer))
+         {
+             System.out.println("Isufficient funds, please try a different"
+                           + " a different ammount.");
+         }
+         else
+         {
+             supportedBank.withdrawSavings(withdrawAmount, currentCustomer);
+             System.out.println("Transaction successful, "
+                   + "your account balance is: $"
+                   + supportedBank.getSavingsBalance(currentCustomer));
+             successWithdraw = true;
+         }          
+      }
+      return "quit";      
+      
+   }
+
+   private String withdrawChecking()
+   {
+      System.out.println("Current balance: " + 
+      supportedBank.getCheckingBalance(currentCustomer));
+      boolean successWithdraw = false;
+      while(!successWithdraw)
+      {
+         Scanner in = new Scanner(System.in);
+         System.out.println(
+               "Please enter an ammount you like to withdraw: ");
+         double withdrawAmount = in.nextDouble();
+         if(withdrawAmount > withdrawLimit || withdrawAmount > transactionLimit)
+         {
+            System.out.println("Please enter an ammount smaller than "
+                           + withdrawLimit);
+         }
+         else if(withdrawAmount > cashOnATM || cashOnATM == 0)
+         {
+            System.out.println("Sorry, the ATM only has " + cashOnATM);
+         }
+         else if(withdrawAmount > supportedBank.getCheckingBalance(currentCustomer))
+         {
+            System.out.println("Isufficient funds, please try a different"
+                           + " a different ammount.");
+         }
+         else
+         {
+            supportedBank.withdrawChecking(withdrawAmount, currentCustomer);
+            System.out.println("Transaction successful, your account balance is:"
+                  + supportedBank.getCheckingBalance(currentCustomer));
+            successWithdraw = true;                    
+         }
+         
+                                   
+     }
+      return "quit";
+   }
+   
    private boolean checkPassword()
    {
 	   Scanner in = new Scanner(System.in);
@@ -148,6 +174,7 @@ public class ATM
 	                  + "access?");
 	            return true;
 	         }
+	         incorrectCounter++;
 	      }
 	      return false;
 	   }
@@ -156,10 +183,11 @@ public class ATM
    }
    private boolean checkCard()
    {
-      System.out.println("Please enter your card information: ");
+      System.out.println("Please enter your card information : ");
       Scanner in = new Scanner(System.in);
       String inputBankID = in.next();
-      int inputCardID = in.nextInt();
+      int inputCardID = Integer.parseInt(in.next());
+      
       currentCustomer = new CashCard(inputBankID, inputCardID);
       if(inputBankID.equals(supportedBank.getBankID()))
       {
@@ -206,6 +234,15 @@ public class ATM
    public void setCashOnATM(float cashOnATM)
    {
       this.cashOnATM = cashOnATM;
+   }
+   public String toString()
+   {
+      return "\nATM name: " + ATMName  + "\nTransaction Limit: " 
+             + transactionLimit + "\nWithdraw Limit: " + withdrawLimit + 
+             "\nCash on ATM: " + cashOnATM + "\nMinimum withdraw: " 
+             + minimumCash;
+      
+      
    }
    
 

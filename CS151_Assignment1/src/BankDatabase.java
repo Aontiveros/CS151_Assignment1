@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 
@@ -14,12 +16,12 @@ public class BankDatabase
 
 	   Customer newCustomer;
 	   accounts = new Hashtable<>();
-	   while(in.hasNext())
+	   while(in.hasNext()) 
 	   {
 	      newCustomer = new Customer();
 	      newCustomer.setCardId(in.nextInt());
 	      newCustomer.setChecking(in.nextDouble());
-	      newCustomer.setSavings(in.nextDouble());
+	      newCustomer.setSavings(in.nextDouble());	      
 	      newCustomer.setPassword(in.next());
 	      newCustomer.setExpirationMonth(in.nextInt());
 	      newCustomer.setExpirationYear(in.nextInt());
@@ -42,9 +44,24 @@ public class BankDatabase
 	{
 	   return accounts.get(cardID).getPassword();
 	}
-	public void saveDatabase()
+	public void saveDatabase(String BankID) throws FileNotFoundException
 	{
-	   
+	   File inFile = new File(BankID + ".txt");    
+	   inFile.delete();
+      PrintWriter writer = new PrintWriter(inFile);
+      Set<Integer> keys = accounts.keySet();    
+      for(Integer key: keys)
+      {
+         writer.println(accounts.get(key).getCardId());
+         writer.println(accounts.get(key).getChecking());
+         writer.println(accounts.get(key).getSavings());
+         writer.println(accounts.get(key).getPassword());
+         writer.println(accounts.get(key).getExpirationMonth());
+         writer.println(accounts.get(key).getExpirationYear());
+     
+      }
+      writer.close();
+      
 	}
 	public Hashtable<Integer, Customer> getCustomers()
 	{

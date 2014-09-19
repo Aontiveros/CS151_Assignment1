@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
@@ -13,9 +14,11 @@ public class Bank
 {
    private static final int NUMBER_ONE = 1;
    private static final int ONE_HUNDRED = 100;
+   private static final int RANDOM_MULTIPLIER = 3213;
    private static final int TWELVE_MONTHS = 12;
    private static final int YEAR_TWO_THOUSAND = 2000;
    private static final int TEN = 10;
+   
    
    private BankDatabase Database;
    private String bankID;
@@ -56,12 +59,13 @@ public class Bank
    {
       Hashtable<Integer, Customer> copy = Database.getCustomers();
       Set<Integer> keys = copy.keySet();
+      System.out.println("Bank " + bankID + " Accounts:");
       for(Integer key: keys)
       {
          System.out.println(copy.get(key));
       }
    }
-   public void initializeAccount()
+   public void initializeAccount() throws FileNotFoundException
    {
       Random rand = new Random();
       int randomNum = rand.nextInt(ONE_HUNDRED) + NUMBER_ONE;
@@ -70,20 +74,24 @@ public class Bank
          rand = new Random();
          randomNum = rand.nextInt(ONE_HUNDRED) + NUMBER_ONE;
       }
+      DecimalFormat df = new DecimalFormat("####.##");
       SecureRandom random = new SecureRandom();
       String randomPassword = new BigInteger(TEN, random).toString();
       int randomMonth = rand.nextInt(TWELVE_MONTHS) + NUMBER_ONE;
-      int randomYear = YEAR_TWO_THOUSAND + rand.nextInt(ONE_HUNDRED) + NUMBER_ONE;
-      double randomChecking = rand.nextDouble();
-      double randomSavings = rand.nextDouble();
+      int randomYear = YEAR_TWO_THOUSAND + 
+            rand.nextInt(ONE_HUNDRED) + NUMBER_ONE;
+      double randomChecking = Double.parseDouble(df.format(
+            rand.nextDouble() * RANDOM_MULTIPLIER));
+      double randomSavings = Double.parseDouble(df.format(
+            rand.nextDouble() * RANDOM_MULTIPLIER));
       
       Database.getCustomers().put(randomNum, new Customer(randomNum, randomYear,
             randomMonth, randomChecking, randomSavings, randomPassword));
+      Database.saveDatabase(bankID);
                   
    }
    public boolean verifyExpiration(CashCard currentCustomer)
    {
-      System.out.println(Calendar.getInstance().get(Calendar.YEAR));
       if(Database.getCustomer(
                  currentCustomer.getCardId()).getExpirationYear() >
                   Calendar.getInstance().get(Calendar.YEAR))
@@ -136,6 +144,15 @@ public class Bank
       Database.getCustomer(
             currentCustomer.getCardId()).withdrawSavings(withdrawAmount);
       
+   }
+   public void printATMs()
+   {
+      Set<Integer> keys = supportedATMs.keySet();
+      System.out.println("Bank " + bankID + " ATMs:");
+      for(Integer key: keys)
+      {
+         System.out.println(supportedATMs.get(key));
+      }
    }
    
 

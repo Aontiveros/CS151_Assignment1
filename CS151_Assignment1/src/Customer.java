@@ -13,6 +13,8 @@ public class Customer
    private int expirationMonth;
    private double checking;
    private double savings; 
+   private int checkingNumber;
+   private int savingsNumber;
    private String password;
     
    public Customer(int cardId, int expirationYear, int expirationMonth, double
@@ -99,6 +101,23 @@ public class Customer
       savings -= withdrawAmount;
       
    }
+   public int getCheckingNumber()
+   {
+      return checkingNumber;
+   }
+   public void setCheckingNumber(int checkingNumber)
+   {
+      this.checkingNumber = checkingNumber;
+   }
+   public int getSavingsNumber()
+   {
+      return savingsNumber;
+   }
+   public void setSavingsNumber(int savingsNumber)
+   {
+      this.savingsNumber = savingsNumber;
+   }
+   
     
     
 	
