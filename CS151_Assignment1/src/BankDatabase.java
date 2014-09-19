@@ -9,26 +9,38 @@ public class BankDatabase
 {
 	private Hashtable<Integer, Customer> accounts;
 
-	public BankDatabase(String BankID) throws FileNotFoundException
+	public BankDatabase(String BankID) //throws FileNotFoundException
 	{
-	   File inFile = new File(BankID + ".txt");
-	   Scanner in = new Scanner(inFile);	   
-
-	   Customer newCustomer;
 	   accounts = new Hashtable<>();
-	   while(in.hasNext()) 
+	   File inFile = new File(BankID + ".txt");
+	   try
 	   {
-	      newCustomer = new Customer();
-	      newCustomer.setCardId(in.nextInt());
-	      newCustomer.setChecking(in.nextDouble());
-	      newCustomer.setSavings(in.nextDouble());	      
-	      newCustomer.setPassword(in.next());
-	      newCustomer.setExpirationMonth(in.nextInt());
-	      newCustomer.setExpirationYear(in.nextInt());
-	      //System.out.println(newCustomer);
-	      accounts.put(newCustomer.getCardId(), newCustomer);
-	            
+	      Scanner in = new Scanner(inFile);
+	      Customer newCustomer;
+	      
+	      while(in.hasNext()) 
+	      {
+	         newCustomer = new Customer();
+	         newCustomer.setCardId(in.nextInt());
+	         newCustomer.setChecking(in.nextDouble());
+	         newCustomer.setSavings(in.nextDouble());        
+	         newCustomer.setPassword(in.next());
+	         newCustomer.setExpirationMonth(in.nextInt());
+	         newCustomer.setExpirationYear(in.nextInt());
+	         newCustomer.setCheckingNumber(in.nextInt());
+	         newCustomer.setSavingsNumber(in.nextInt());
+	         //System.out.println(newCustomer);
+	         accounts.put(newCustomer.getCardId(), newCustomer);
+	      }
 	   }
+	   catch(FileNotFoundException e)
+	   {
+	      System.out.println("There are no accounts, please load a database or "
+	            + "initialize accounts.");
+	   }
+
+
+	            
 	}
 	
 	public Customer getCustomer(int cardID)
@@ -49,7 +61,7 @@ public class BankDatabase
 	   File inFile = new File(BankID + ".txt");    
 	   inFile.delete();
       PrintWriter writer = new PrintWriter(inFile);
-      Set<Integer> keys = accounts.keySet();    
+      Set<Integer> keys = accounts.keySet(); 
       for(Integer key: keys)
       {
          writer.println(accounts.get(key).getCardId());
@@ -58,6 +70,8 @@ public class BankDatabase
          writer.println(accounts.get(key).getPassword());
          writer.println(accounts.get(key).getExpirationMonth());
          writer.println(accounts.get(key).getExpirationYear());
+         writer.println(accounts.get(key).getCheckingNumber());
+         writer.println(accounts.get(key).getSavingsNumber());
      
       }
       writer.close();

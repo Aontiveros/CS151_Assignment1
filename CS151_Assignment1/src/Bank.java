@@ -80,33 +80,39 @@ public class Bank
       int randomMonth = rand.nextInt(TWELVE_MONTHS) + NUMBER_ONE;
       int randomYear = YEAR_TWO_THOUSAND + 
             rand.nextInt(ONE_HUNDRED) + NUMBER_ONE;
+      int randomChkNumber = rand.nextInt(ONE_HUNDRED) + NUMBER_ONE;
+      int randomSvgNumber = rand.nextInt(ONE_HUNDRED) + NUMBER_ONE;
       double randomChecking = Double.parseDouble(df.format(
             rand.nextDouble() * RANDOM_MULTIPLIER));
       double randomSavings = Double.parseDouble(df.format(
             rand.nextDouble() * RANDOM_MULTIPLIER));
       
       Database.getCustomers().put(randomNum, new Customer(randomNum, randomYear,
-            randomMonth, randomChecking, randomSavings, randomPassword));
+            randomMonth, randomChecking, randomSavings, randomPassword, 
+            randomChkNumber, randomSvgNumber));
       Database.saveDatabase(bankID);
                   
    }
    public boolean verifyExpiration(CashCard currentCustomer)
    {
-      if(Database.getCustomer(
-                 currentCustomer.getCardId()).getExpirationYear() >
-                  Calendar.getInstance().get(Calendar.YEAR))
-      {
-         return true;
-      }
-      else if(Database.getCustomer(
-            currentCustomer.getCardId()).getExpirationYear() == 
-                  Calendar.getInstance().get(Calendar.YEAR))
+      if(Database.doesCardExist(currentCustomer.getCardId()))
       {
          if(Database.getCustomer(
-               currentCustomer.getCardId()).getExpirationMonth() >= 
-                     Calendar.getInstance().get(Calendar.MONTH))
+                    currentCustomer.getCardId()).getExpirationYear() >
+                     Calendar.getInstance().get(Calendar.YEAR))
          {
             return true;
+         }
+         else if(Database.getCustomer(
+               currentCustomer.getCardId()).getExpirationYear() == 
+                     Calendar.getInstance().get(Calendar.YEAR))
+         {
+            if(Database.getCustomer(
+                  currentCustomer.getCardId()).getExpirationMonth() >= 
+                        Calendar.getInstance().get(Calendar.MONTH))
+            {
+               return true;
+            }
          }
       }
       return false;
@@ -133,16 +139,20 @@ public class Bank
    {
       return Database.getCustomer(currentCustomer.getCardId()).getSavings();
    }
-   public void withdrawChecking(double withdrawAmount, CashCard currentCustomer)
+   public void withdrawChecking(double withdrawAmount, CashCard currentCustomer) 
+         throws FileNotFoundException
    {
       Database.getCustomer(
             currentCustomer.getCardId()).withdrawChecking(withdrawAmount);
+      Database.saveDatabase(bankID);
       
    }
    public void withdrawSavings(double withdrawAmount, CashCard currentCustomer)
+         throws FileNotFoundException
    {
       Database.getCustomer(
             currentCustomer.getCardId()).withdrawSavings(withdrawAmount);
+      Database.saveDatabase(bankID);
       
    }
    public void printATMs()

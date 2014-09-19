@@ -18,7 +18,8 @@ public class Customer
    private String password;
     
    public Customer(int cardId, int expirationYear, int expirationMonth, double
-            checking, double savings, String password)
+            checking, double savings, String password, int checkingNumber,
+            int savingsNumber)
    {
       this.cardId = cardId;
       this.expirationYear = expirationYear;
@@ -26,6 +27,8 @@ public class Customer
       this.checking = checking;
       this.savings = savings;
       this.password = password;
+      this.checkingNumber = checkingNumber;
+      this.savingsNumber = savingsNumber;
        
    }  
    public Customer()
@@ -88,7 +91,8 @@ public class Customer
    public String toString()
    {
       return "Card ID: " + cardId + " Expiration: " + expirationMonth + "/" + 
-            expirationYear + " Savings: $" + savings + " Checking: $" + checking
+            expirationYear + " Savings (#"+ savingsNumber+ "): $" + savings 
+                  + " Checking (#"+ checkingNumber+ "):$" + checking
             + " Password: " + password;
       
    }

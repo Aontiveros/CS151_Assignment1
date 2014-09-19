@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 
@@ -33,9 +34,9 @@ public class ATM
 		this.withdrawLimit = withdrawLimit;
 		
 		supportedBank = newBank;
-		ATMName = "ATM" + bankName + "_" + ATMNumber;
+		ATMName = "ATM" + "_" + bankName + ATMNumber;
 	}
-	public void run()
+	public void run() throws FileNotFoundException
 	{
 	   String progress = "";
 	   while(!progress.equals("quit"))
@@ -52,7 +53,7 @@ public class ATM
 	   }
 	}
 	
-	private String completeDeposit()
+	private String completeDeposit() throws FileNotFoundException
    {
       Scanner in = new Scanner(System.in);
       String accountInput = in.next();
@@ -74,7 +75,7 @@ public class ATM
       return "quit";
          
    }
-   private String withdrawSavings()
+   private String withdrawSavings() throws FileNotFoundException
    {
       Scanner in = new Scanner(System.in);
       System.out.println("Current balance: " + 
@@ -85,16 +86,18 @@ public class ATM
          System.out.println(
                 "Please enter an ammount you like to withdraw: ");
          double withdrawAmount = in.nextDouble();
-         if(withdrawAmount > withdrawLimit || withdrawAmount > transactionLimit)
+         if(withdrawAmount > withdrawLimit || withdrawAmount > transactionLimit
+               || withdrawAmount < minimumCash)
          {
             System.out.println("Please enter an ammount smaller than "
-                  + withdrawLimit);
+                  + withdrawLimit + " or greater than " + minimumCash);
          }
          else if(withdrawAmount > cashOnATM || cashOnATM == 0)
          {
              System.out.println("Sorry, the ATM only has " + cashOnATM);
          }
-         else if(withdrawAmount > supportedBank.getSavingsBalance(currentCustomer))
+         else if(withdrawAmount > 
+                  supportedBank.getSavingsBalance(currentCustomer))
          {
              System.out.println("Isufficient funds, please try a different"
                            + " a different ammount.");
@@ -105,6 +108,7 @@ public class ATM
              System.out.println("Transaction successful, "
                    + "your account balance is: $"
                    + supportedBank.getSavingsBalance(currentCustomer));
+             
              successWithdraw = true;
          }          
       }
@@ -112,7 +116,7 @@ public class ATM
       
    }
 
-   private String withdrawChecking()
+   private String withdrawChecking() throws FileNotFoundException
    {
       System.out.println("Current balance: " + 
       supportedBank.getCheckingBalance(currentCustomer));
@@ -189,7 +193,8 @@ public class ATM
       int inputCardID = Integer.parseInt(in.next());
       
       currentCustomer = new CashCard(inputBankID, inputCardID);
-      if(inputBankID.equals(supportedBank.getBankID()))
+      if(inputBankID.equals(supportedBank.getBankID())
+            && supportedBank.verifyCardID(currentCustomer))
       {
          if(supportedBank.verifyExpiration(currentCustomer))
          {
@@ -203,9 +208,14 @@ public class ATM
             return false;
          }
       }
-      else
+      else if(!inputBankID.equals(supportedBank.getBankID()))
       {
          System.out.println("Sorry, this ATM doesn't support your Bank.");
+         return false;
+      }
+      else
+      {
+         System.out.println("Sorry, this bank doesn't recognize your card.");
          return false;
       }
       
