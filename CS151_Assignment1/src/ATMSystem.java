@@ -2,14 +2,19 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 
+/**
+  Customer Class that holds the data to the account in the Bank
+  Customer class for CS 151 Assignment #1  
+  @author Antonio Ontiveros
+  @version 1.0 9/10/2014 
+ */
 
-
-public class Main
+public class ATMSystem
 {
    public static void main(String args[]) throws FileNotFoundException
    {
-      Bank firstBank = new Bank("A");
-      Bank secondBank = new Bank("B");
+      BankComputer firstBank = new BankComputer("A");
+      BankComputer secondBank = new BankComputer("B");
       initializeBanksAndATMs(firstBank, secondBank);
       String choice = "";
       Scanner in = new Scanner(System.in);
@@ -21,7 +26,7 @@ public class Main
     
    }
 
-   private static String selectATM(Bank firstBank, Bank secondBank, Scanner in) 
+   private static String selectATM(BankComputer firstBank, BankComputer secondBank, Scanner in) 
          throws FileNotFoundException
    {
       String choice = "";
@@ -47,7 +52,7 @@ public class Main
       
    }
 
-   private static void initializeBanksAndATMs(Bank firstBank, Bank secondBank) throws FileNotFoundException
+   private static void initializeBanksAndATMs(BankComputer firstBank, BankComputer secondBank) throws FileNotFoundException
    {
       firstBank.createATM();
       firstBank.createATM();

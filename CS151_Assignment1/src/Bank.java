@@ -1,183 +1,144 @@
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.text.DecimalFormat;
-import java.util.Calendar;
-import java.util.Hashtable;
-import java.util.Random;
-import java.util.Set;
+import java.io.PrintWriter;
+import java.util.*;
 
-
+/**
+  Bank Class that holds all the accounts and is accessible by the bank computer.
+  Bank class for CS 151 Assignment #1  
+  @author Antonio Ontiveros
+  @version 1.0 9/10/2014 
+ */
 public class Bank
 {
-   private static final int NUMBER_ONE = 1;
-   private static final int ONE_HUNDRED = 100;
-   private static final int RANDOM_MULTIPLIER = 3213;
-   private static final int TWELVE_MONTHS = 12;
-   private static final int YEAR_TWO_THOUSAND = 2000;
-   private static final int TEN = 10;
-   
-   
-   private BankDatabase Database;
-   private String bankID;
-   private Hashtable<Integer, ATM> supportedATMs;
-   private int ATMCounter;
-   
-   public Bank(String bankID) throws FileNotFoundException
-   {
-      Database = new BankDatabase(bankID);
-      this.bankID = bankID;
-      supportedATMs = new Hashtable<>(); 
-      ATMCounter = NUMBER_ONE;
-   }  
-   public void createATM()
-   {
-      supportedATMs.put(ATMCounter, new ATM(bankID, ATMCounter, this, 50, 25, 5,
-                                            100));
-      ATMCounter++;
-   }
-   public String getBankID()
-   {
-      return bankID;
-   }
-   public void setBankID(String bankID)
-   {
-      this.bankID = bankID;
-   }
-   public Hashtable<Integer, ATM> getATMs()
-   {
-      return supportedATMs;
-   }
-   public ATM getSpecificATM(int ATMNumber)
-   {
-      return supportedATMs.get(ATMNumber);
-      
-   }
-   public void displayAccounts()
-   {
-      Hashtable<Integer, Customer> copy = Database.getCustomers();
-      Set<Integer> keys = copy.keySet();
-      System.out.println("Bank " + bankID + " Accounts:");
+	private Hashtable<Integer, Customer> accounts;
+
+	/**
+	  The constructor for the bank class, the bank class contains all the 
+	  accounts that belong to the bank. The bank will look for the text file with
+	  its corresponding bank ID and read the accounts from there. If there is
+	  no text file, or if there isn't any accounts then the Bank will print to 
+	  the console that the Bank has no accounts currently attached to it. Use
+	  the initialize account method in the Bank
+	  @param BankID The ID or the Bank.
+	 */ 
+	public Bank(String BankID)
+	{
+	   accounts = new Hashtable<>();
+	   File inFile = new File(BankID + ".txt");
+	   try
+	   {
+	      Scanner in = new Scanner(inFile);
+	      Customer newCustomer;
+	      
+	      while(in.hasNext()) 
+	      {
+	         newCustomer = new Customer();
+	         newCustomer.setCardId(in.nextInt());
+	         newCustomer.setChecking(in.nextDouble());
+	         newCustomer.setSavings(in.nextDouble());        
+	         newCustomer.setPassword(in.next());
+	         newCustomer.setExpirationMonth(in.nextInt());
+	         newCustomer.setExpirationYear(in.nextInt());
+	         newCustomer.setCheckingNumber(in.nextInt());
+	         newCustomer.setSavingsNumber(in.nextInt());
+	         newCustomer.setAccessible(in.nextBoolean());
+	         //System.out.println(newCustomer);
+	         accounts.put(newCustomer.getCardId(), newCustomer);
+	      }
+	      in.close();
+	   }
+	   catch(FileNotFoundException e)
+	   {
+	      System.out.println("There are no accounts, please load a database or "
+	            + "initialize accounts.");
+	   }        
+	}
+	/**
+	  The getter to return the customer that corresponds from the card ID that
+	  was put in through the ATM
+	  @param cardID The ID of the card that was placed in by the Customer into 
+	  the ATM
+	  @return The customer that is in the database
+	 */
+	public Customer getCustomer(int cardID)
+	{
+	   return accounts.get(cardID);
+	}
+	/**
+	  This method checks whether the card exists in the bank.
+	  @param cardID The card id of the card that the customer put into the ATM
+	  @return
+	 */
+	public boolean doesCardExist(int cardID)
+	{
+	   return accounts.containsKey(cardID);
+	}
+	/**
+	  This method gets the password of the customer that is currently accessing 
+	  the ATM
+	  @param cardID The ID of the card that the customer placed into the ATM
+	  @return the password that corresponds with the account that the customer
+	  has.
+	 */
+	public String getUserPassword(int cardID)
+	{
+	   return accounts.get(cardID).getPassword();
+	}
+	/**
+	  This method saves the accounts that are currently in the system into a 
+	  text file so that it saves the customers that are currently in the bank	  
+	  @param BankID The ID of the Bank
+	  @throws FileNotFoundException In case the file fails to save or write
+	 */
+	public void saveDatabase(String BankID) throws FileNotFoundException
+	{
+	   File inFile = new File(BankID + ".txt");    
+	   inFile.delete();
+      PrintWriter writer = new PrintWriter(inFile);
+      Set<Integer> keys = accounts.keySet(); 
       for(Integer key: keys)
       {
-         System.out.println(copy.get(key));
+         writer.println(accounts.get(key).getCardId());
+         writer.println(accounts.get(key).getChecking());
+         writer.println(accounts.get(key).getSavings());
+         writer.println(accounts.get(key).getPassword());
+         writer.println(accounts.get(key).getExpirationMonth());
+         writer.println(accounts.get(key).getExpirationYear());
+         writer.println(accounts.get(key).getCheckingNumber());
+         writer.println(accounts.get(key).getSavingsNumber());
+         writer.println(accounts.get(key).isAccessible());
       }
-   }
-   public void initializeAccount() throws FileNotFoundException
-   {
-      Random rand = new Random();
-      int randomNum = rand.nextInt(ONE_HUNDRED) + NUMBER_ONE;
-      while(Database.getCustomers().containsKey(randomNum))
-      {
-         rand = new Random();
-         randomNum = rand.nextInt(ONE_HUNDRED) + NUMBER_ONE;
-      }
-      DecimalFormat df = new DecimalFormat("####.##");
-      SecureRandom random = new SecureRandom();
-      String randomPassword = new BigInteger(TEN, random).toString();
-      int randomMonth = rand.nextInt(TWELVE_MONTHS) + NUMBER_ONE;
-      int randomYear = YEAR_TWO_THOUSAND + 
-            rand.nextInt(ONE_HUNDRED) + NUMBER_ONE;
-      int randomChkNumber = rand.nextInt(ONE_HUNDRED) + NUMBER_ONE;
-      int randomSvgNumber = rand.nextInt(ONE_HUNDRED) + NUMBER_ONE;
-      double randomChecking = Double.parseDouble(df.format(
-            rand.nextDouble() * RANDOM_MULTIPLIER));
-      double randomSavings = Double.parseDouble(df.format(
-            rand.nextDouble() * RANDOM_MULTIPLIER));
+      writer.close();
       
-      Database.getCustomers().put(randomNum, new Customer(randomNum, randomYear,
-            randomMonth, randomChecking, randomSavings, randomPassword, 
-            randomChkNumber, randomSvgNumber));
-      Database.saveDatabase(bankID);
-                  
-   }
-   public boolean verifyExpiration(CashCard currentCustomer)
+	}
+	/**
+	  Getter method to get the hashtable of accounts that belong to the bank
+	  @return The hashtable that contains the customers in the bank
+	 */
+	public Hashtable<Integer, Customer> getCustomers()
+	{
+	   return accounts;
+	}
+	/**
+	  Returns the dollar amount of the customer's checking account.
+	  @param amountWithdrawn The withdraw amount that was verified by the 
+	                          bank computer to be valid.
+	  @param cardID The ID of the customer's card.
+	 */
+	public void withdrawChecking(double amountWithdrawn, int cardID)
+	{
+	   accounts.get(cardID).withdrawChecking(amountWithdrawn);
+	}
+	/**
+   Returns the dollar amount of the customer's savings account.
+   @param amountWithdrawn The withdraw amount that was verified by the 
+                           bank computer to be valid.
+   @param cardID The ID of the customer's card.
+  */
+	public void withdrawSavings(double amountWithdrawn, int cardID)
    {
-      if(Database.doesCardExist(currentCustomer.getCardId()))
-      {
-         if(Database.getCustomer(
-                    currentCustomer.getCardId()).getExpirationYear() >
-                     Calendar.getInstance().get(Calendar.YEAR))
-         {
-            return true;
-         }
-         else if(Database.getCustomer(
-               currentCustomer.getCardId()).getExpirationYear() == 
-                     Calendar.getInstance().get(Calendar.YEAR))
-         {
-            if(Database.getCustomer(
-                  currentCustomer.getCardId()).getExpirationMonth() >= 
-                        Calendar.getInstance().get(Calendar.MONTH))
-            {
-               return true;
-            }
-         }
-      }
-      return false;
-
-      
-    
+      accounts.get(cardID).withdrawSavings(amountWithdrawn);
    }
-   public boolean verifyCardID(CashCard currentCustomer)
-   { 
-      return Database.doesCardExist(currentCustomer.getCardId());
-   }
-   public boolean verifyUserPassword(String inputPassword, 
-                                     CashCard currentCustomer)
-   {
-      
-      return inputPassword.equals(
-                         Database.getUserPassword(currentCustomer.getCardId()));
-   }
-   public double getCheckingBalance(CashCard currentCustomer)
-   {
-      return Database.getCustomer(currentCustomer.getCardId()).getChecking();
-   }
-   public double getSavingsBalance(CashCard currentCustomer)
-   {
-      return Database.getCustomer(currentCustomer.getCardId()).getSavings();
-   }
-   public void withdrawChecking(double withdrawAmount, CashCard currentCustomer) 
-         throws FileNotFoundException
-   {
-      Database.getCustomer(
-            currentCustomer.getCardId()).withdrawChecking(withdrawAmount);
-      Database.saveDatabase(bankID);
-      
-   }
-   public void withdrawSavings(double withdrawAmount, CashCard currentCustomer)
-         throws FileNotFoundException
-   {
-      Database.getCustomer(
-            currentCustomer.getCardId()).withdrawSavings(withdrawAmount);
-      Database.saveDatabase(bankID);
-      
-   }
-   public void printATMs()
-   {
-      Set<Integer> keys = supportedATMs.keySet();
-      System.out.println("Bank " + bankID + " ATMs:");
-      for(Integer key: keys)
-      {
-         System.out.println(supportedATMs.get(key));
-      }
-   }
-   public boolean accountStatus(CashCard currentCustomer)
-   {
-      return Database.getCustomer(currentCustomer.getCardId()).isAccessible();     
-   }
-   public void setAccountStatusFalse(CashCard currentCustomer) 
-         throws FileNotFoundException
-   {
-      Database.getCustomer(currentCustomer.getCardId()).setAccessible(false);
-      Database.saveDatabase(currentCustomer.getBankId());
-   }
-   
-
+	
 }
-
-	
-
-	
-	
-
